@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Curso Interativo · QA & Análise de Testes</title>
+    <!-- Font Awesome 6 (gratuito) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', Roboto, system-ui, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(145deg, #f0f5fe 0%, #e9f0fa 100%);
+            min-height: 100vh;
+            padding: 2rem 1.5rem;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        /* cabeçalho com progresso */
+        .header-curso {
+            background: white;
+            border-radius: 40px;
+            padding: 1.8rem 2.5rem;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 12px 30px rgba(0, 20, 50, 0.06);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(60, 100, 180, 0.08);
+        }
+
+        .header-curso h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #0b2b4a;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .header-curso h1 i {
+            color: #2a7de1;
+            font-size: 2.2rem;
+        }
+
+        .progresso-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .barra-progresso {
+            width: 200px;
+            height: 8px;
+            background: #dce5f0;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .barra-progresso .preenchimento {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #2a7de1, #5b9cf5);
+            border-radius: 20px;
+            transition: width 0.5s ease;
+        }
+
+        .stats {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.95rem;
+            color: #1f4465;
+            font-weight: 500;
+        }
+
+        .stats i {
+            color: #2a7de1;
+            margin-right: 0.3rem;
+        }
+
+        .badge-concluido {
+            background: #e3f0e8;
+            color: #116b3b;
+            padding: 0.3rem 1rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        /* filtros / navegação por módulos */
+        .filtros-modulos {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem 1rem;
+            margin-bottom: 2.5rem;
+            justify-content: center;
+        }
+
+        .btn-modulo {
+            background: white;
+            border: none;
+            padding: 0.65rem 1.8rem;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #1a3c5e;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.01);
+            border: 1px solid #cddef5;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .btn-modulo i {
+            color: #4f7eb3;
+            font-size: 0.9rem;
+        }
+
+        .btn-modulo:hover {
+            background: #e5effb;
+            border-color: #8bb3e0;
+            transform: translateY(-2px);
+        }
+
+        .btn-modulo.active {
+            background: #1a5fb0;
+            border-color: #1a5fb0;
+            color: white;
+            box-shadow: 0 8px 18px rgba(26, 95, 176, 0.20);
+        }
+
+        .btn-modulo.active i {
+            color: white;
+        }
+
+        /* grade de cards (módulos/aulas) */
+        .grade-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .card-aula {
+            background: white;
+            border-radius: 28px;
+            padding: 1.8rem 1.6rem 1.6rem;
+            border: 1px solid #e3edf8;
+            transition: all 0.25s ease;
+            box-shadow: 0 8px 20px rgba(0, 20, 40, 0.02);
+            display: flex;
+            flex-direction: column;
+            cursor: default;
+        }
+
+        .card-aula:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px rgba(20, 60, 120, 0.06);
+            border-color: #b6cee9;
+        }
+
+        .card-aula .topo {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.7rem;
+        }
+
+        .card-aula .topo h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #0a2942;
+            line-height: 1.3;
+        }
+
+        .card-aula .icone-modulo {
+            background: #e4effa;
+            border-radius: 30px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1f6bc0;
+            font-size: 1.2rem;
+        }
+
+        .card-aula .descricao {
+            color: #2c4d70;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin: 0.5rem 0 1rem;
+            flex: 1;
+        }
+
+        .card-aula .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem 0.7rem;
+            margin: 0.4rem 0 0.8rem;
+        }
+
+        .card-aula .tags span {
+            background: #eff4fa;
+            padding: 0.15rem 0.8rem;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #1f4b78;
+            letter-spacing: 0.2px;
+        }
+
+        .card-aula .footer-card {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.6rem;
+            border-top: 1px solid #e5eef9;
+            padding-top: 0.9rem;
+        }
+
+        .btn-conteudo {
+            background: transparent;
+            border: 1px solid #b6cee9;
+            border-radius: 40px;
+            padding: 0.3rem 1.2rem;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #1a4b7a;
+            transition: all 0.15s;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn-conteudo:hover {
+            background: #1a5fb0;
+            border-color: #1a5fb0;
+            color: white;
+        }
+
+        .btn-conteudo i {
+            font-size: 0.7rem;
+        }
+
+        .status-concluido {
+            color: #1b8c4a;
+            font-weight: 600;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        /* painel expandido (conteúdo da aula) */
+        .painel-expandido {
+            background: white;
+            border-radius: 32px;
+            padding: 2rem 2.5rem;
+            margin: 1.5rem 0 2.5rem;
+            border-left: 6px solid #2a7de1;
+            box-shadow: 0 12px 30px rgba(0, 20, 40, 0.04);
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        .painel-expandido.visivel {
+            display: block;
+        }
+
+        .painel-expandido h2 {
+            font-size: 1.8rem;
+            color: #0b2b4a;
+            margin-bottom: 0.3rem;
+        }
+
+        .painel-expandido .sub {
+            color: #3a6188;
+            margin-bottom: 1.2rem;
+            display: flex;
+            gap: 1.2rem;
+            flex-wrap: wrap;
+        }
+
+        .painel-expandido .conteudo-texto {
+            color: #1f405e;
+            line-height: 1.7;
+            font-size: 1rem;
+        }
+
+        .painel-expandido .conteudo-texto ul {
+            margin: 0.8rem 0 1.2rem 1.2rem;
+        }
+
+        .painel-expandido .conteudo-texto li {
+            margin-bottom: 0.3rem;
+        }
+
+        .btn-fechar-painel {
+            background: #eef4fa;
+            border: none;
+            padding: 0.4rem 1.6rem;
+            border-radius: 40px;
+            font-weight: 600;
+            color: #1a3c5e;
+            cursor: pointer;
+            margin-top: 1.2rem;
+            transition: 0.15s;
+        }
+
+        .btn-fechar-painel:hover {
+            background: #d5e2f0;
+        }
+
+        /* QUIZ interativo */
+        .quiz-area {
+            background: white;
+            border-radius: 32px;
+            padding: 2rem 2.5rem;
+            margin: 2rem 0 1rem;
+            box-shadow: 0 12px 30px rgba(0, 20, 40, 0.04);
+            border: 1px solid #dae6f5;
+        }
+
+        .quiz-area h2 {
+            font-size: 1.6rem;
+            color: #0b2b4a;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .quiz-area h2 i {
+            color: #e67e22;
+        }
+
+        .pergunta-quiz {
+            background: #f6faff;
+            padding: 1.5rem 1.8rem;
+            border-radius: 24px;
+            margin: 1rem 0;
+        }
+
+        .pergunta-quiz p {
+            font-weight: 600;
+            color: #0b2b4a;
+            font-size: 1.1rem;
+        }
+
+        .opcoes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin: 0.8rem 0 0.5rem;
+        }
+
+        .opcao-btn {
+            background: white;
+            border: 1.5px solid #cfdef0;
+            padding: 0.5rem 1.6rem;
+            border-radius: 60px;
+            font-weight: 500;
+            color: #1a3c5e;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-size: 0.9rem;
+        }
+
+        .opcao-btn:hover {
+            background: #e5effb;
+            border-color: #8bb3e0;
+        }
+
+        .opcao-btn.selecionada {
+            background: #1a5fb0;
+            border-color: #1a5fb0;
+            color: white;
+        }
+
+        .opcao-btn.certa {
+            background: #1b8c4a;
+            border-color: #1b8c4a;
+            color: white;
+        }
+
+        .opcao-btn.errada {
+            background: #c94a4a;
+            border-color: #c94a4a;
+            color: white;
+        }
+
+        .feedback-quiz {
+            margin-top: 0.8rem;
+            font-weight: 500;
+            padding: 0.4rem 0;
+        }
+
+        /* vazio */
+        .vazio {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem 0;
+            color: #3a6188;
+        }
+
+        .vazio i {
+            font-size: 2.4rem;
+            color: #8bb3e0;
+        }
+
+        /* animações */
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* responsivo */
+        @media (max-width: 700px) {
+            .header-curso {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+                padding: 1.5rem;
+            }
+            .progresso-wrapper {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .barra-progresso {
+                width: 100%;
+            }
+            .painel-expandido {
+                padding: 1.5rem;
+            }
+            .quiz-area {
+                padding: 1.5rem;
+            }
+            .header-curso h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- cabeçalho do curso -->
+    <div class="header-curso">
+        <h1><i class="fas fa-vial"></i> QA · Testes</h1>
+        <div class="progresso-wrapper">
+            <div class="stats">
+                <span><i class="fas fa-check-circle"></i> <span id="contadorConcluidos">0</span>/8</span>
+                <span><i class="fas fa-star"></i> 8 módulos</span>
+            </div>
+            <div class="barra-progresso">
+                <div class="preenchimento" id="barraProgresso" style="width: 0%;"></div>
+            </div>
+            <span class="badge-concluido"><i class="fas fa-graduation-cap"></i> em andamento</span>
+        </div>
+    </div>
+
+    <!-- navegação por módulos (filtros) -->
+    <div class="filtros-modulos" id="filtrosContainer">
+        <button class="btn-modulo active" data-filtro="todos"><i class="fas fa-th-large"></i> Todos</button>
+        <button class="btn-modulo" data-filtro="fundamentos"><i class="fas fa-bullseye"></i> Fundamentos</button>
+        <button class="btn-modulo" data-filtro="planejamento"><i class="fas fa-clipboard-list"></i> Planejamento</button>
+        <button class="btn-modulo" data-filtro="execucao"><i class="fas fa-play"></i> Execução</button>
+        <button class="btn-modulo" data-filtro="automacao"><i class="fas fa-robot"></i> Automação</button>
+    </div>
+
+    <!-- grade de cards (aulas) -->
+    <div class="grade-cards" id="gradeCards"></div>
+
+    <!-- painel de detalhes (expandido) -->
+    <div class="painel-expandido" id="painelDetalhe">
+        <h2 id="detalheTitulo">Título da aula</h2>
+        <div class="sub">
+            <span><i class="fas fa-tag"></i> <span id="detalheCategoria">categoria</span></span>
+            <span><i class="fas fa-clock"></i> 15 min</span>
+        </div>
+        <div class="conteudo-texto" id="detalheConteudo">
+            <p>Conteúdo detalhado da aula.</p>
+        </div>
+        <button class="btn-fechar-painel" id="fecharPainel"><i class="fas fa-times"></i> Fechar</button>
+    </div>
+
+    <!-- QUIZ interativo -->
+    <div class="quiz-area" id="quizArea">
+        <h2><i class="fas fa-question-circle"></i> Quiz do QA</h2>
+        <div class="pergunta-quiz" id="perguntaQuiz">
+            <p id="textoPergunta">Carregando pergunta...</p>
+            <div class="opcoes" id="opcoesQuiz"></div>
+            <div class="feedback-quiz" id="feedbackQuiz"></div>
+        </div>
+        <button class="btn-modulo" id="proximaPergunta" style="background: #1a5fb0; color: white; border: none; padding: 0.5rem 2rem; border-radius: 60px; font-weight: 600; margin-top: 0.8rem;"><i class="fas fa-arrow-right"></i> Próxima pergunta</button>
+    </div>
+</div>
+
+<script>
+    (function(){
+        // --------------------------------------------------------------
+        // DADOS DOS MÓDULOS/AULAS (8 aulas)
+        // --------------------------------------------------------------
+        const aulas = [
+            { id: 1, titulo: "Introdução ao QA", categoria: "fundamentos", descricao: "O que é qualidade, evolução do teste, mentalidade de QA.", conteudo: "<p>Qualidade de software é o grau em que um sistema atende aos requisitos e expectativas. O teste não é apenas uma fase, mas uma disciplina que permeia todo o ciclo de desenvolvimento.</p><ul><li>✅ <strong>Pirâmide de testes</strong>: unitários, integração, end-to-end.</li><li>✅ <strong>Mindset</strong>: encontrar defeitos, não apenas validar.</li><li>✅ <strong>STLC</strong>: ciclo de vida do teste.</li></ul>", tags: ["Iniciante", "Teoria"], icone: "fa-gem" },
+            { id: 2, titulo: "Tipos de Teste", categoria: "fundamentos", descricao: "Funcional, não-funcional, regressão, fumaça, exploratório.", conteudo: "<p>Os tipos de teste ajudam a cobrir diferentes aspectos do sistema:</p><ul><li>🔹 <strong>Funcional</strong>: requisitos de negócio.</li><li>🔹 <strong>Não-funcional</strong>: performance, usabilidade, segurança.</li><li>🔹 <strong>Regressão</strong>: garante que novas alterações não quebrem funcionalidades existentes.</li><li>🔹 <strong>Exploratório</strong>: aprendizado e descoberta simultânea.</li></ul>", tags: ["Intermediário", "Prática"], icone: "fa-list-check" },
+            { id: 3, titulo: "Planejamento de Testes", categoria: "planejamento", descricao: "Estratégia, casos de teste, rastreabilidade, estimativas.", conteudo: "<p>Planejar é essencial para direcionar esforços:</p><ul><li>📋 <strong>Plano de teste</strong>: escopo, objetivos, recursos.</li><li>📋 <strong>Caso de teste</strong>: entrada, ação, resultado esperado.</li><li>📋 <strong>Matriz de rastreabilidade</strong>: liga requisitos a casos de teste.</li><li>📋 <strong>Critérios de aceite</strong>: definição de pronto.</li></ul>", tags: ["Estratégia", "Documentação"], icone: "fa-clipboard" },
+            { id: 4, titulo: "Técnicas de Criação de Casos de Teste", categoria: "planejamento", descricao: "Particionamento por equivalência, análise de valor limite, tabela de decisão.", conteudo: "<p>As técnicas aumentam a cobertura e eficiência:</p><ul><li>📌 <strong>Particionamento por equivalência</strong>: dividir entradas em classes.</li><li>📌 <strong>Análise de valor limite</strong>: testar bordas.</li><li>📌 <strong>Tabela de decisão</strong>: combinações de condições.</li><li>📌 <strong>Transição de estados</strong>: mudanças de estado do sistema.</li></ul>", tags: ["Técnicas", "Avançado"], icone: "fa-table" },
+            { id: 5, titulo: "Execução e Gestão de Defeitos", categoria: "execucao", descricao: "Ciclo de vida do bug, ferramentas, relatórios.", conteudo: "<p>Executar testes e gerenciar defeitos é o coração do QA:</p><ul><li>🐞 <strong>Bug lifecycle</strong>: novo, atribuído, corrigido, verificado, fechado.</li><li>🐞 <strong>Severidade vs prioridade</strong>: impacto vs urgência.</li><li>🐞 <strong>Ferramentas</strong>: Jira, Bugzilla, TestLink.</li><li>🐞 <strong>Relatórios</strong>: métricas, gráficos, cobertura.</li></ul>", tags: ["Prática", "Ferramentas"], icone: "fa-bug" },
+            { id: 6, titulo: "Testes Ágeis e SCRUM", categoria: "execucao", descricao: "QA em equipes ágeis, BDD, TDD, histórias de usuário.", conteudo: "<p>No ambiente ágil, o QA é parte da equipe de desenvolvimento:</p><ul><li>⚡ <strong>BDD</strong> (Behavior Driven Development): especificações em linguagem natural.</li><li>⚡ <strong>TDD</strong> (Test Driven Development): testes antes do código.</li><li>⚡ <strong>Histórias de usuário</strong>: critérios de aceite claros.</li><li>⚡ <strong>Testes contínuos</strong>: integração com CI/CD.</li></ul>", tags: ["Ágil", "SCRUM"], icone: "fa-people-arrows" },
+            { id: 7, titulo: "Automação de Testes", categoria: "automacao", descricao: "Quando automatizar, ferramentas (Selenium, Cypress, API).", conteudo: "<p>Automação traz velocidade e confiabilidade:</p><ul><li>🤖 <strong>Critérios</strong>: testes repetitivos, críticos, com alta execução.</li><li>🤖 <strong>Ferramentas</strong>: Selenium WebDriver, Cypress, Postman/Newman.</li><li>🤖 <strong>Testes de API</strong>: REST, SOAP, contratos.</li><li>🤖 <strong>Pipeline CI/CD</strong>: execução automática em cada build.</li></ul>", tags: ["Automação", "DevOps"], icone: "fa-robot" },
+            { id: 8, titulo: "Performance e Segurança", categoria: "automacao", descricao: "Teste de carga, estresse, OWASP, ferramentas.", conteudo: "<p>Qualidade também é performance e segurança:</p><ul><li>⚡ <strong>Performance</strong>: JMeter, LoadRunner, testes de carga e estresse.</li><li>⚡ <strong>Segurança</strong>: OWASP Top 10, ZAP, Burp Suite.</li><li>⚡ <strong>Escalabilidade</strong>: como o sistema se comporta sob carga.</li><li>⚡ <strong>Vulnerabilidades</strong>: injeção, XSS, autenticação quebrada.</li></ul>", tags: ["Performance", "Segurança"], icone: "fa-shield-halved" }
+        ];
+
+        // DOM
+        const grade = document.getElementById('gradeCards');
+        const filtrosBotoes = document.querySelectorAll('.btn-modulo');
+        const painel = document.getElementById('painelDetalhe');
+        const fecharPainel = document.getElementById('fecharPainel');
+        const detalheTitulo = document.getElementById('detalheTitulo');
+        const detalheCategoria = document.getElementById('detalheCategoria');
+        const detalheConteudo = document.getElementById('detalheConteudo');
+
+        // Quiz
+        const perguntaEl = document.getElementById('textoPergunta');
+        const opcoesEl = document.getElementById('opcoesQuiz');
+        const feedbackEl = document.getElementById('feedbackQuiz');
+        const proximaBtn = document.getElementById('proximaPergunta');
+
+        // estado de conclusão (simulado)
+        let aulasConcluidas = new Set();
+        let aulaExpandidaId = null;
+
+        // ---------- QUIZ ----------
+        const quizPerguntas = [
+            { pergunta: "O que é a pirâmide de testes?", opcoes: ["Uma hierarquia de tipos de teste", "Uma ferramenta de automação", "Um método de gestão de bugs", "Uma técnica de segurança"], correta: 0 },
+            { pergunta: "Qual técnica divide entradas em classes válidas e inválidas?", opcoes: ["Análise de valor limite", "Particionamento por equivalência", "Tabela de decisão", "Transição de estados"], correta: 1 },
+            { pergunta: "Qual ferramenta é comum para automação de testes web?", opcoes: ["JMeter", "Selenium", "ZAP", "TestLink"], correta: 1 },
+            { pergunta: "No ciclo de vida do bug, qual estado vem depois de 'Corrigido'?", opcoes: ["Atribuído", "Verificado", "Novo", "Fechado"], correta: 1 },
+            { pergunta: "O que significa BDD?", opcoes: ["Behavior Driven Development", "Bug Driven Development", "Binary Data Definition", "Backend Deployment"], correta: 0 }
+        ];
+        let perguntaAtual = 0;
+        let respostaSelecionada = null;
+        let quizConcluido = false;
+
+        function carregarPergunta(index) {
+            if (index >= quizPerguntas.length) {
+                perguntaEl.textContent = "🎉 Parabéns! Você completou o quiz de QA!";
+                opcoesEl.innerHTML = '';
+                feedbackEl.textContent = 'Excelente! Continue estudando para ser um QA de destaque.';
+                proximaBtn.style.display = 'none';
+                quizConcluido = true;
+                return;
+            }
+            const q = quizPerguntas[index];
+            perguntaEl.textContent = q.pergunta;
+            opcoesEl.innerHTML = '';
+            q.opcoes.forEach((op, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'opcao-btn';
+                btn.textContent = op;
+                btn.dataset.index = i;
+                btn.addEventListener('click', (e) => selecionarOpcao(e, q.correta));
+                opcoesEl.appendChild(btn);
+            });
+            feedbackEl.textContent = '';
+            respostaSelecionada = null;
+            proximaBtn.style.display = 'inline-flex';
+            // remove classes anteriores
+            document.querySelectorAll('.opcao-btn').forEach(b => b.className = 'opcao-btn');
+        }
+
+        function selecionarOpcao(e, correta) {
+            if (respostaSelecionada !== null) return; // já respondeu
+            const btns = document.querySelectorAll('.opcao-btn');
+            const idx = parseInt(e.currentTarget.dataset.index);
+            respostaSelecionada = idx;
+
+            btns.forEach((b, i) => {
+                b.classList.remove('selecionada', 'certa', 'errada');
+                if (i === correta) b.classList.add('certa');
+                else if (i === idx && idx !== correta) b.classList.add('errada');
+            });
+
+            if (idx === correta) {
+                feedbackEl.innerHTML = '<span style="color: #1b8c4a;"><i class="fas fa-check-circle"></i> Correto! Muito bem.</span>';
+            } else {
+                feedbackEl.innerHTML = `<span style="color: #c94a4a;"><i class="fas fa-times-circle"></i> Ops! A resposta correta era: ${quizPerguntas[perguntaAtual].opcoes[correta]}</span>`;
+            }
+            // desabilita outros cliques
+            btns.forEach(b => b.style.cursor = 'default');
+        }
+
+        function proximaPergunta() {
+            if (quizConcluido) return;
+            if (respostaSelecionada === null) {
+                feedbackEl.innerHTML = '<span style="color: #c94a4a;">Selecione uma opção antes de continuar.</span>';
+                return;
+            }
+            perguntaAtual++;
+            carregarPergunta(perguntaAtual);
+        }
+
+        // ---------- RENDERIZAÇÃO DOS CARDS ----------
+        function renderizarCards(filtro = 'todos') {
+            grade.innerHTML = '';
+            const filtradas = (filtro === 'todos') ? aulas : aulas.filter(a => a.categoria === filtro);
+
+            if (filtradas.length === 0) {
+                grade.innerHTML = `<div class="vazio"><i class="fas fa-book-open"></i><p>Nenhum módulo encontrado para este filtro.</p></div>`;
+                return;
+            }
+
+            filtradas.forEach(aula => {
+                const card = document.createElement('div');
+                card.className = 'card-aula';
+                const concluido = aulasConcluidas.has(aula.id);
+                card.innerHTML = `
+                    <div class="topo">
+                        <h3>${aula.titulo}</h3>
+                        <div class="icone-modulo"><i class="fas ${aula.icone || 'fa-book'}"></i></div>
+                    </div>
+                    <div class="descricao">${aula.descricao}</div>
+                    <div class="tags">
+                        ${aula.tags.map(t => `<span>#${t}</span>`).join('')}
+                    </div>
+                    <div class="footer-card">
+                        <button class="btn-conteudo" data-id="${aula.id}"><i class="fas fa-eye"></i> Detalhes</button>
+                        <span class="status-concluido">${concluido ? '<i class="fas fa-check-circle"></i> Concluído' : '<i class="far fa-circle"></i> Pendente'}</span>
+                    </div>
+                `;
+                grade.appendChild(card);
+            });
+
+            // eventos para os botões "Detalhes"
+            document.querySelectorAll('.btn-conteudo').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = parseInt(btn.dataset.id);
+                    abrirPainel(id);
+                });
+            });
+
+            // atualiza barra de progresso
+            atualizarProgresso();
+        }
+
+        // ---------- PAINEL DE DETALHES ----------
+        function abrirPainel(id) {
+            const aula = aulas.find(a => a.id === id);
+            if (!aula) return;
+            aulaExpandidaId = id;
+            detalheTitulo.textContent = aula.titulo;
+            detalheCategoria.textContent = aula.categoria;
+            detalheConteudo.innerHTML = aula.conteudo;
+            painel.classList.add('visivel');
+            // marca como concluída (simulado)
+            if (!aulasConcluidas.has(id)) {
+                aulasConcluidas.add(id);
+                renderizarCards(document.querySelector('.btn-modulo.active')?.dataset.filtro || 'todos');
+            }
+            // rolar para o painel
+            painel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        fecharPainel.addEventListener('click', () => {
+            painel.classList.remove('visivel');
+        });
+
+        // ---------- FILTROS ----------
+        filtrosBotoes.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filtrosBotoes.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const filtro = btn.dataset.filtro;
+                renderizarCards(filtro);
+                // fecha painel ao mudar filtro
+                painel.classList.remove('visivel');
+            });
+        });
+
+        // ---------- PROGRESSO ----------
+        function atualizarProgresso() {
+            const total = aulas.length;
+            const concluidos = aulasConcluidas.size;
+            const pct = Math.round((concluidos / total) * 100);
+            document.getElementById('barraProgresso').style.width = pct + '%';
+            document.getElementById('contadorConcluidos').textContent = concluidos;
+            // atualiza badge
+            const badge = document.querySelector('.badge-concluido');
+            if (concluidos === total) {
+                badge.innerHTML = '<i class="fas fa-check-circle"></i> Concluído!';
+                badge.style.background = '#c6e6d6';
+            } else {
+                badge.innerHTML = '<i class="fas fa-graduation-cap"></i> em andamento';
+            }
+        }
+
+        // ---------- INICIALIZAÇÃO ----------
+        renderizarCards('todos');
+        carregarPergunta(0);
+        proximaBtn.addEventListener('click', proximaPergunta);
+
+        // evento para fechar painel clicando fora (opcional)
+        document.addEventListener('click', (e) => {
+            if (painel.classList.contains('visivel')) {
+                if (!painel.contains(e.target) && !e.target.closest('.card-aula') && !e.target.closest('.btn-conteudo')) {
+                    // não fecha automaticamente para não atrapalhar
+                }
+            }
+        });
+
+        // pequeno ajuste: ao clicar em "Detalhes" já marca como concluído
+        // já está dentro do abrirPainel
+
+    })();
+</script>
+</body>
+</html>
